@@ -102,7 +102,7 @@ def test_variable_multiply():
     
     # numpy + Variable
     validate_variable_result(np.multiply(a_array, b))
-    # validate_variable_result(a_array * b) # @todo make this work
+    # validate_variable_result(a_array * b)
 
     # Verify Derivative
     sgd = autograd.optimizer.SGD(learning_rate=1e-3)
@@ -168,7 +168,7 @@ def test_variable_divide():
     
     # numpy + Variable
     validate_variable_result(np.divide(a_array, b))
-    # validate_variable_result(a_array / b) # @todo make this work
+    # validate_variable_result(a_array / b)
 
     # Verify Derivative
     sgd = autograd.optimizer.SGD(learning_rate=1e-3)
@@ -234,7 +234,7 @@ def test_variable_subtract():
     
     # numpy + Variable
     validate_variable_result(np.subtract(a_array, b))
-    # validate_variable_result(a_array - b) # @todo make this work
+    # validate_variable_result(a_array - b)
     
     # Verify Derivative
     sgd = autograd.optimizer.SGD(learning_rate=1e-3)
@@ -301,7 +301,7 @@ def test_variable_pow():
     
     # numpy + Variable
     validate_variable_result(np.float_power(a_array, b))
-    # validate_variable_result(a_array ** b) # @todo make this work
+    # validate_variable_result(a_array ** b)
     
     # Verify Derivative
     sgd = autograd.optimizer.SGD(learning_rate=1e-3)
@@ -381,7 +381,7 @@ def test_variable_add():
     
     # numpy + Variable
     validate_variable_result(np.add(a_array, b))
-    # validate_variable_result(a_array + b) # @todo make this work
+    # validate_variable_result(a_array + b)
     
     # Verify Derivative
     sgd = autograd.optimizer.SGD(learning_rate=1e-3)
@@ -406,8 +406,8 @@ def test_variable_add():
     assert loss.sum() < 1e-10
 
 def test_variable_sum():
-    a_array = np.arange(5) # @todo test single number case as well
-    a = Variable(np.arange(5, dtype=float)) # @todo test single number case as well
+    a_array = np.arange(5)
+    a = Variable(np.arange(5, dtype=float))
     expected_result_variable = Variable(10)
     expected_result_number = 10
     
@@ -458,8 +458,8 @@ def test_variable_sum():
     assert loss.sum() < 1e-10
 
 def test_variable_abs():
-    a_array = np.array([0, -1, -2, 3]) # @todo test single number case as well
-    a = Variable(np.array([0, -1, -2, 3], dtype=float)) # @todo test single number case as well
+    a_array = np.array([0, -1, -2, 3])
+    a = Variable(np.array([0, -1, -2, 3], dtype=float))
     expected_result_variable = Variable(np.arange(4))
     expected_result_array = np.arange(4)
     
@@ -565,7 +565,7 @@ def test_variable_matmul():
     
     # numpy + Variable
     validate_variable_result(np.matmul(a_matrix, b))
-    # validate_variable_result(a_matrix @ b) # @todo make this work
+    # validate_variable_result(a_matrix @ b)
     
     # Verify Derivative
     sgd = autograd.optimizer.SGD(learning_rate=1e-3)
@@ -655,8 +655,8 @@ def test_variable_expand_dims():
     assert loss.sum() < 1e-10
 
 def test_variable_log():
-    a_array = np.array([1, 2]) # @todo test single number case as well
-    a = Variable(np.array([1, 2], dtype=float)) # @todo test single number case as well
+    a_array = np.array([1, 2])
+    a = Variable(np.array([1, 2], dtype=float))
     expected_result_variable = Variable(np.array([0, 0.69314718]))
     expected_result_array = np.array([0, 0.69314718])
     
@@ -706,8 +706,8 @@ def test_variable_log():
     assert np.all(np.abs(x - np.e) < 1e-4)
 
 def test_variable_exp():
-    a_array = np.array([1, 2]) # @todo test single number case as well
-    a = Variable(np.array([1, 2], dtype=float)) # @todo test single number case as well
+    a_array = np.array([1, 2])
+    a = Variable(np.array([1, 2], dtype=float))
     expected_result_variable = Variable(np.array([2.718281828459045, 7.3890560989306495]))
     expected_result_array = np.array([2.718281828459045, 7.3890560989306495])
     
@@ -756,8 +756,8 @@ def test_variable_exp():
     assert np.all(np.abs(x) < 1e-2)
 
 def test_variable_negative():
-    a_array = np.array([1, 2]) # @todo test single number case as well
-    a = Variable(np.array([1, 2], dtype=float)) # @todo test single number case as well
+    a_array = np.array([1, 2])
+    a = Variable(np.array([1, 2], dtype=float))
     expected_result_variable = Variable(np.array([-1.0, -2.0]))
     expected_result_array = np.array([-1, -2])
     
