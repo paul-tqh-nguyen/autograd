@@ -23,8 +23,6 @@ from .misc_utilities import *
 # Optimizers #
 ##############
 
-# @todo add gradient clipping as a parameter to take_training_step or as an initialization parameter
-
 class Optimizer(ABC):
     
     @abstractmethod
@@ -44,7 +42,7 @@ class Optimizer(ABC):
             raise NotImplementedError(f'Backpropagation on arrays with dimensionality > 2 not yet supported.')
         d_dependent_variable_over_d_dependent_variable = np.ones(dependent_variable.data.shape) if len(dependent_variable.data.shape) < 2 else np.eye(dependent_variable.data.shape[1])
         variable_to_gradient[dependent_variable] = d_dependent_variable_over_d_dependent_variable
-        # iterate over variables depended on by dependent_variable (directly or indirectly) in topologically sorted order (i.e. DFS ordedr with no repeats)
+        # iterate over variables depended on by dependent_variable (directly or indirectly) in topologically sorted order
         for var in dependent_variable.depended_on_variables():
             assert var in variable_to_gradient
             d_dependent_variable_over_d_var = variable_to_gradient[var]
@@ -53,9 +51,6 @@ class Optimizer(ABC):
             for variable_depended_on_by_var, gradient in variable_depended_on_by_var_to_gradient.items():
                 variable_to_gradient[variable_depended_on_by_var] += gradient
         variable_to_gradient = dict(variable_to_gradient)
-        # # @todo remove this
-        # for v, g in variable_to_gradient.items():
-        #     variable_to_gradient[v] = g/np.linalg.norm(g)
         return variable_to_gradient
 
     @abstractmethod
