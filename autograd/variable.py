@@ -24,12 +24,7 @@ from .misc_utilities import *
 # Variable Classes #
 ####################
 
-# @todo we use ValueError in places where NotImplementedError would be more appropriate
-
 VariableOperand = Union[int, float, bool, np.number, np.ndarray, 'Variable']
-
-# @todo add transpose method
-# @todo add slicing via the __getitem__ method that returns variables
 
 class Variable:
 
@@ -95,7 +90,6 @@ class Variable:
             setattr(module, np_path_sub_attributes[-1], replacement_function)
         except TypeError as error:
             if len(error.args) == 1 and 'can\'t set attributes of built-in/extension type' in error.args[0]:
-                # @todo warn when this case is used stating that it's dangerous.
                 forbiddenfruit.curse(module, np_path_sub_attributes[-1], replacement_function)
             else:
                 raise error
@@ -112,18 +106,15 @@ class Variable:
                     kwargs[internally_used_name] = replaced_callable
                     return func(*args, **kwargs)
                 decorated_function.replaced_callable = replaced_callable
-                if isinstance(replaced_callable, np.ufunc): # @todo test this with both True and False
-                    # @todo instead of passing in is_ufunc, check if the replaced_callable is an instance of ufunc
-                    # @todo abstract this out
-                    # @todo support other ufunc methods
-                    def reducer(array, axis, dtype, out, **reducer_kwargs): # @todo add type hints
-                        if axis is not None: # @todo test this
+                if isinstance(replaced_callable, np.ufunc):
+                    def reducer(array, axis, dtype, out, **reducer_kwargs):
+                        if axis is not None:
                             raise ValueError(f'The parameter "axis" is not supported for {np_path}.reduce.')
-                        if dtype is not None: # @todo test this
+                        if dtype is not None:
                             raise ValueError(f'The parameter "dtype" is not supported for {np_path}.reduce.')
-                        if out is not None: # @todo test this
+                        if out is not None:
                             raise ValueError(f'The parameter "out" is not supported for {np_path}.reduce.')
-                        if len(reducer_kwargs) > 0: # @todo test this
+                        if len(reducer_kwargs) > 0:
                             raise ValueError(f'The parameters {[repr(kwarg_name) for kwarg_name in reducer_kwargs.keys()]} are not supported for {np_path}.reduce.')
                         reduction = replaced_callable.reduce(array, axis, dtype, out)
                         return reduction
@@ -251,35 +242,33 @@ class Variable:
         return absolute_value_variable
 
     def __radd__(self, summand: VariableOperand) -> VariableOperand:
-        return self.add(summand) # @todo test this
+        return self.add(summand)
 
     def __rsub__(self, minuend: VariableOperand) -> VariableOperand:
-        return self.neg().add(minuend) # @todo test this
+        return self.neg().add(minuend)
 
     def __rmul__(self, factor: VariableOperand) -> VariableOperand:
-        return self.multiply(factor) # @todo test this
+        return self.multiply(factor)
 
     def __rtruediv__(self, dividend: VariableOperand) -> VariableOperand:
-        return self.pow(-1).multiply(dividend) # @todo test this
+        return self.pow(-1).multiply(dividend)
     
     def sigmoid(self) -> 'Variable':
-        return 1 / (np.exp(self.neg())+1) # @todo test this
+        return 1 / (np.exp(self.neg())+1)
 
-    def squared_error(self, target: VariableOperand) -> 'Variable': # @todo test this
+    def squared_error(self, target: VariableOperand) -> 'Variable':
         return self.subtract(target).pow(2.0)
 
-    def bce_loss(self, target: VariableOperand,  epsilon: float = 1e-16) -> 'Variable': # @todo test this
+    def bce_loss(self, target: VariableOperand, epsilon: float = 1e-16) -> 'Variable':
         prediction = self.add(epsilon) if self.eq(0).all() else self
         loss = -(target*np.log(prediction) + (1-target)*np.log(1-prediction))
         return loss
 
 ##########################################
 # Variable Non-Differentiable Operations #
-##########################################
+#########################################
 
-# @todo lots of boiler plate ; abstract it out
-
-@Variable.new_method('round', 'around') # @todo test this
+@Variable.new_method('round', 'around')
 @Variable.numpy_replacement(np_around='np.around')
 def around(operand: VariableOperand, np_around: Callable, **kwargs) -> VariableOperand:
     if kwargs.get('out') is not None:
@@ -288,13 +277,13 @@ def around(operand: VariableOperand, np_around: Callable, **kwargs) -> VariableO
     operand_data = operand.data if operand_is_variable else operand
     return np_around(operand_data, **kwargs)
 
-@Variable.numpy_replacement(np_any='np.any') # @todo retry using @Variable.new_method here
+@Variable.numpy_replacement(np_any='np.any')
 def any(operand: VariableOperand, np_any: Callable, **kwargs) -> Union[bool, np.ndarray]:
     operand_is_variable = isinstance(operand, Variable)
     operand_data = operand.data if operand_is_variable else operand
     return np_any(operand_data, **kwargs)
 
-@Variable.numpy_replacement(np_all='np.all') # @todo retry using @Variable.new_method here
+@Variable.numpy_replacement(np_all='np.all')
 def all(operand: VariableOperand, np_all: Callable, **kwargs) -> Union[bool, np.ndarray]:
     operand_is_variable = isinstance(operand, Variable)
     operand_data = operand.data if operand_is_variable else operand
@@ -302,7 +291,7 @@ def all(operand: VariableOperand, np_all: Callable, **kwargs) -> Union[bool, np.
 
 @Variable.new_method('isclose')
 @Variable.numpy_replacement(np_isclose='np.isclose')
-def isclose(a: VariableOperand, b: VariableOperand, np_isclose: Callable, **kwargs) -> VariableOperand: # @todo review this return type
+def isclose(a: VariableOperand, b: VariableOperand, np_isclose: Callable, **kwargs) -> VariableOperand:
     a_is_variable = isinstance(a, Variable)
     b_is_variable = isinstance(b, Variable)
     a_data = a.data if a_is_variable else a
@@ -311,7 +300,7 @@ def isclose(a: VariableOperand, b: VariableOperand, np_isclose: Callable, **kwar
 
 @Variable.new_method('equal', 'eq', '__eq__')
 @Variable.numpy_replacement(np_equal='np.equal')
-def equal(a: VariableOperand, b: VariableOperand, np_equal: Callable, **kwargs) -> VariableOperand: # @todo review this return type
+def equal(a: VariableOperand, b: VariableOperand, np_equal: Callable, **kwargs) -> VariableOperand:
     a_is_variable = isinstance(a, Variable)
     b_is_variable = isinstance(b, Variable)
     a_data = a.data if a_is_variable else a
@@ -320,7 +309,7 @@ def equal(a: VariableOperand, b: VariableOperand, np_equal: Callable, **kwargs) 
 
 @Variable.new_method('not_equal', 'neq', 'ne', '__ne__')
 @Variable.numpy_replacement(np_not_equal='np.not_equal')
-def not_equal(a: VariableOperand, b: VariableOperand, np_not_equal: Callable, **kwargs) -> VariableOperand: # @todo review this return type
+def not_equal(a: VariableOperand, b: VariableOperand, np_not_equal: Callable, **kwargs) -> VariableOperand:
     a_is_variable = isinstance(a, Variable)
     b_is_variable = isinstance(b, Variable)
     a_data = a.data if a_is_variable else a
@@ -329,7 +318,7 @@ def not_equal(a: VariableOperand, b: VariableOperand, np_not_equal: Callable, **
 
 @Variable.new_method('greater', 'greater_than', 'gt', '__gt__')
 @Variable.numpy_replacement(np_greater='np.greater')
-def greater(a: VariableOperand, b: VariableOperand, np_greater: Callable, **kwargs) -> VariableOperand: # @todo review this return type
+def greater(a: VariableOperand, b: VariableOperand, np_greater: Callable, **kwargs) -> VariableOperand:
     a_is_variable = isinstance(a, Variable)
     b_is_variable = isinstance(b, Variable)
     a_data = a.data if a_is_variable else a
@@ -338,7 +327,7 @@ def greater(a: VariableOperand, b: VariableOperand, np_greater: Callable, **kwar
 
 @Variable.new_method('greater_equal', 'greater_than_equal', 'ge', 'gte', '__ge__')
 @Variable.numpy_replacement(np_greater_equal='np.greater_equal')
-def greater_equal(a: VariableOperand, b: VariableOperand, np_greater_equal: Callable, **kwargs) -> VariableOperand: # @todo review this return type
+def greater_equal(a: VariableOperand, b: VariableOperand, np_greater_equal: Callable, **kwargs) -> VariableOperand:
     a_is_variable = isinstance(a, Variable)
     b_is_variable = isinstance(b, Variable)
     a_data = a.data if a_is_variable else a
@@ -347,7 +336,7 @@ def greater_equal(a: VariableOperand, b: VariableOperand, np_greater_equal: Call
 
 @Variable.new_method('less', 'less_than', 'lt', '__lt__')
 @Variable.numpy_replacement(np_less='np.less')
-def less(a: VariableOperand, b: VariableOperand, np_less: Callable, **kwargs) -> VariableOperand: # @todo review this return type
+def less(a: VariableOperand, b: VariableOperand, np_less: Callable, **kwargs) -> VariableOperand:
     a_is_variable = isinstance(a, Variable)
     b_is_variable = isinstance(b, Variable)
     a_data = a.data if a_is_variable else a
@@ -356,7 +345,7 @@ def less(a: VariableOperand, b: VariableOperand, np_less: Callable, **kwargs) ->
 
 @Variable.new_method('less_equal', 'less_than_equal', 'le', 'lte', '__le__')
 @Variable.numpy_replacement(np_less_equal='np.less_equal')
-def less_equal(a: VariableOperand, b: VariableOperand, np_less_equal: Callable, **kwargs) -> VariableOperand: # @todo review this return type
+def less_equal(a: VariableOperand, b: VariableOperand, np_less_equal: Callable, **kwargs) -> VariableOperand:
     a_is_variable = isinstance(a, Variable)
     b_is_variable = isinstance(b, Variable)
     a_data = a.data if a_is_variable else a
@@ -366,13 +355,6 @@ def less_equal(a: VariableOperand, b: VariableOperand, np_less_equal: Callable, 
 ######################################
 # Variable Differentiable Operations #
 ######################################
-
-# @todo lots of boiler plate ; abstract it out.
-
-# @todo support int, float, and all the np types of various sizes for each operation
-
-# @todo support np.squeeze
-# @todo support np.power
 
 @Variable.new_method()
 @Variable.numpy_replacement(np_dot=['np.dot', 'np.ndarray.dot'])
@@ -494,9 +476,7 @@ def add(a: VariableOperand, b: VariableOperand, np_add: Callable, **kwargs) -> V
     summation_variable = Variable(summation, dict(variable_depended_on_by_summation_to_backward_propagation_functions))
     return summation_variable
 
-# @todo support np.mean
-
-@Variable.numpy_replacement(np_sum='np.sum') # @todo retry using @Variable.new_method here
+@Variable.numpy_replacement(np_sum='np.sum')
 def sum(operand: VariableOperand, np_sum: Callable, **kwargs) -> VariableOperand:
     operand_is_variable = isinstance(operand, Variable)
     operand_data = operand.data if operand_is_variable else operand
@@ -571,7 +551,6 @@ def expand_dims(operand: VariableOperand, axis: Union[Tuple[int], int], np_expan
     if len(kwargs) > 0:
         raise ValueError(f'The parameters {[repr(kwarg_name) for kwarg_name in kwargs.keys()]} are not supported for {Variable.__qualname__}.')
     variable_depended_on_by_expanded_operand_to_backward_propagation_functions = defaultdict(list)
-    # @todo test that we don't have infinite recursion when backgpropagating through a series of np.exapnd_dims calls and np.squeeze calls
     variable_depended_on_by_expanded_operand_to_backward_propagation_functions[operand].append(lambda d_minimization_target_over_d_expanded_operand: d_minimization_target_over_d_expanded_operand.squeeze(axis))
     expanded_operand_variable = Variable(expanded_operand.copy(), dict(variable_depended_on_by_expanded_operand_to_backward_propagation_functions))
     return expanded_operand_variable

@@ -32,9 +32,9 @@ class Layer(ABC):
     def __call__(self, *args, **kwargs) -> Variable:
         raise NotImplementedError
 
-class LinearLayer(Layer): # @todo test this
+class LinearLayer(Layer):
     
-    def __init__(self, number_of_inputs: int, number_of_outputs: int, init_method: Literal['random', 'zero'] = 'random'): # @todo support different weight initialization methods, e.g. Xavier & Kaiming
+    def __init__(self, number_of_inputs: int, number_of_outputs: int, init_method: Literal['random', 'zero'] = 'random'):
         if init_method == 'random':
             initializer = np.random.rand
         elif init_method == 'zero':
@@ -46,7 +46,7 @@ class LinearLayer(Layer): # @todo test this
         self.biases = Variable(np.expand_dims(initializer(number_of_outputs), 0))
         return
 
-    def __call__(self, operand: VariableOperand) -> Variable: # @todo test this for all cases of VariableOperand
+    def __call__(self, operand: VariableOperand) -> Variable:
         if isinstance(operand, (int, float, bool, np.number)):
             operand = Variable(np.array(operand))
         if len(operand.shape) == 0:
@@ -58,24 +58,22 @@ class LinearLayer(Layer): # @todo test this
         return linear_layer_result
 
     def l1_norm(self) -> Variable:
-        # @todo test for all classes that inherit from this class
         norm = self.matrix.sum()
         return norm
 
     def l2_norm(self, include_squareroot: bool = False) -> Variable:
-        # @todo test for all classes that inherit from this class
         norm = self.matrix.pow(2.0).sum()
         if include_squareroot:
             norm = norm.pow(0.5)
         return norm
 
-class LogisticRegressionLayer(LinearLayer): # @todo test this
+class LogisticRegressionLayer(LinearLayer):
     
     def __init__(self, number_of_inputs: int, number_of_outputs: int):
         super().__init__(number_of_inputs, number_of_outputs, init_method='zero')
         return
 
-    def __call__(self, operand: VariableOperand) -> Variable: # @todo test this for all cases of VariableOperand
+    def __call__(self, operand: VariableOperand) -> Variable:
         logit = super().__call__(operand)
         result = logit.sigmoid()
         return result
