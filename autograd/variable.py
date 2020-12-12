@@ -1,9 +1,15 @@
 
 '''
 
-'''
+This file contains the Variable class, the basic numerical unit used to track gradients. 
 
-# @todo fill in docstring
+Sections:
+* Imports
+* Variable Classes
+* Variable Non-Differentiable Operations
+* Variable Differentiable Operations
+
+'''
 
 ###########
 # Imports #
@@ -11,14 +17,11 @@
 
 import forbiddenfruit
 from itertools import chain
-from functools import reduce
 from collections import defaultdict
 import numpy as np
-from typing import List, Set, Tuple, DefaultDict, Dict, Callable, Union, Generator, Optional
+from typing import List, Set, Tuple, Dict, Callable, Union, Generator
 
 from .misc_utilities import *
-
-# @todo verify these imports are used
 
 ####################
 # Variable Classes #

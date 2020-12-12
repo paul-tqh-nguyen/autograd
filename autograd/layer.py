@@ -1,9 +1,13 @@
 
 '''
 
-'''
+This file contains high-level interfaces for conventient layer generation.
 
-# @todo fill in docstring
+Sections:
+* Imports
+* Layer Classes
+
+'''
 
 ###########
 # Imports #
@@ -15,8 +19,6 @@ from typing_extensions import Literal
 
 from .variable import Variable, VariableOperand
 from .misc_utilities import *
- 
-# @todo verify these imports are used
 
 #################
 # Layer Classes #

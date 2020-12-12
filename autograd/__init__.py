@@ -17,8 +17,6 @@ In this module, "var is indirectly relied upon mv" means that the Variable mv di
 
 '''
 
-# @todo fill in doc string
-
 ###########
 # Imports #
 ###########

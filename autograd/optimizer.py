@@ -1,9 +1,14 @@
 
 '''
 
-'''
+This file contains optimizer implementations.
 
-# @todo fill in docstring
+Sections:
+* Imports
+* Optimizers
+
+
+'''
 
 ###########
 # Imports #
@@ -12,12 +17,10 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
 import numpy as np
-from typing import List, Set, Tuple, DefaultDict, Dict, Callable, Union, Generator, Optional
+from typing import Dict, Union
 
 from .variable import Variable
 from .misc_utilities import *
-
-# @todo verify these imports are used
 
 ##############
 # Optimizers #
